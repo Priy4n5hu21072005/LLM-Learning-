@@ -8,6 +8,9 @@ token=tokenizer.tokenize(text)
 
 tokens_id=tokenizer.convert_tokens_to_ids(token)
 
-output=tokenizer(text)
+output=tokenizer(text,
+padding="max_length",
+max_length=10,
+truncation=True)
 print(output)
 
