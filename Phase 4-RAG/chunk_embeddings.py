@@ -29,6 +29,8 @@ while start<len(text):
     start += chunk_size-overlap
 
 
+
+####################### Embedding #####################################
 model =SentenceTransformer("all-MiniLM-L6-v2")
 chunk_embeddings=model.encode(chunks)
 
