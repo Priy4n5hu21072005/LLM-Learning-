@@ -10,6 +10,7 @@ from langchain_core.messages import AnyMessage
 from langchain_groq import ChatGroq
 import os
 from dotenv import load_dotenv
+
 class AgentState(TypedDict):
     messages:Annotated[list[AnyMessage],add_messages]
 
@@ -21,11 +22,26 @@ llm=ChatGroq(
 )
 
 
+
+
+
 async def main():
     async with streamable_http_client("http://127.0.0.1:8000/mcp") as (read_stream,write_stream):
         async with ClientSession(read_stream,write_stream)as session:
             await session.initialize()
-            tools=await session.list_tools()
+            mcp_tools=await session.list_tools()
+            def create_langchain_tool(mcp_tool):
+                async def call_mcp_tool(**kwargs):
+                    result0=await session.call_tool(
+                        mcp_tool.name,
+                        kwargs
+                    )
+                    return result.structured_content["result0"]
+                return StructuredTool.from_function(
+                    coroutine=call_mcp_tool,
+                    name=mcp_tool.name,
+                    description=mcp_tool.description
+                )
             async def call_mcp_tool(filename:str):
                 result = await session.call_tool(
                     "get_file_content",
@@ -65,7 +81,7 @@ async def main():
                     ]
                 }
             )
-            print(result["messages"][-1].content)
+            
 
 
 if __name__=="__main__":
