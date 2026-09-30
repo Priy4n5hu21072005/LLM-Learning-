@@ -1,7 +1,27 @@
 from mcp.server import MCPServer
+import requests
 
 mcp=MCPServer("CodeReview")
 
+@mcp.tool()
+def get_github_repo(owner:str,repo:str)->dict:
+    """Return basic information about a Github Repository"""
+
+    url=f"https://api.github.com/repos/{owner}/{repo}"
+    response=requests.get(url)
+    if response.status_code !=200:
+        return {
+            "error":f"Github API returned {response.status_code}"
+        }
+    data=response.json()
+    return {
+        "name":data["name"],
+        "full_name":data ["full_name"],
+        "description":data["description"],
+        "language":data["langugae"],
+        "default_branch":data["default_branch"],
+        "private":data["private"]
+    }
 @mcp.tool()
 def get_file_content(filename:str)->str:
     """Return the content of a project file."""
@@ -50,6 +70,6 @@ def list_project_files() -> list[str]:
 if __name__=="__main__":
     mcp.run(
         transport="streamable-http",
-        port=8000,
-        host="127.0.0.1"
+        host="127.0.0.1",
+        port=8000
     )

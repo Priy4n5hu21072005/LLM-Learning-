@@ -80,7 +80,7 @@ async def main():
                 {
                     "messages":[
                         (
-                            "user","Search for the keyword 'login' inside auth.py."
+                            "user","Give me basic information about the Github repository langchain-ai/langchain."
                         )
                     ]
                 }
