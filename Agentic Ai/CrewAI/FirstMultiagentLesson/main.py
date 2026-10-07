@@ -2,8 +2,15 @@ import os
 from dotenv import load_dotenv
 from crewai import LLM,Agent,Crew,Process
 import crewai.llms.cache as crew_cache
-from crewai_tools import SerperDevTool
 crew_cache.mark_cache_breakpoint=lambda msg:msg
+
+
+from crewai.mcp.config import MCPServerHTTP
+
+you_mcp=MCPServerHTTP(
+    url="https://api.you.com/mcp?profile=free",
+    streamable=True
+)
 
 
 load_dotenv()
@@ -13,8 +20,6 @@ llm=LLM(
     api_key=os.getenv("GROQ_API_KEY")
 )
 
-search_tool=SerperDevTool()
-
 
 
 news_agent=Agent(
@@ -22,7 +27,7 @@ news_agent=Agent(
     goal="Analyze recent news related to a given stock and identify news that could affect its price.",
     backstory="You are experinced financial news analyst who focuses on identifying important events and their potential impact on stock prices .",
     llm=llm,
-    tools=[search_tool]
+    mcps=[you_mcp]
 )
 
 from crewai import Task
